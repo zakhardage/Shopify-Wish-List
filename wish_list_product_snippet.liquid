@@ -1,0 +1,36 @@
+{% if customer %} 
+	{% assign value = product.id %}
+	{% capture product_id %}{{ product.id }}{% endcapture %}
+	{% for tag in customer.tags %}
+		{% capture tag_id %}{{ tag }}{% endcapture %}
+		{% if tag_id contains product_id %}
+			{% capture value %}x{{ tag_id }}{% endcapture %}
+		{% endif %}
+		{% assign size = value | size %}
+		{% if size == 0 %}{% assign value = product_id %}{% endif %}
+	{% endfor %}
+
+	{% unless size == 0 %}
+		{% assign product_id_size = product_id | size %}
+		{% assign value_size = value | size %}
+
+		{% assign difference_one = value_size | minus: product_id_size %}
+		{% assign difference = difference_one | money_without_currency | times: 100 %}
+		{% capture difference_check %}{{ difference | divided_by: 2 }}{% endcapture %}
+		{% assign check = difference_check | split: '.' %}
+
+		{% if check[1] contains "5" %}{% assign display = "false" %}{% else %}{% assign display = "true" %}{% endif %}
+	{% endunless %}
+
+	{% if display == "false" %}
+		<p>This product is in your <a href="/pages/wish-list">wish list</a></p>
+	{% else %}
+		{% form 'customer' %}
+			<input type="hidden" id="contact_email" name="contact[email]" value="{{ customer.email }}"/>
+			<input type="hidden" name="contact[tags]" id="contact_tags" value="{{ value }}" />
+			<input type='submit' value="add to wish list" />
+		{% endform %}
+	{% endif %}
+{% else %}
+	<p>To add this product to your wish list you must <a href="/account/login">sign in</a> or <a href="/account/register">create an account</a>.</p>
+{% endif %}
