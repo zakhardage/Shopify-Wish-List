@@ -4,7 +4,8 @@ Shopify-Wish-List
 non-app wish list using customer.tags
 
 To make this wish list work, you'll need to insert wish_list_product_snippet.liquid somewhere in your product page 
-and wish_list_page_snippet.liquid in a page with the handle wish-list.
+and wish_list_page_snippet.liquid in a page with the handle wish-list. You'll also need to create a smart collection 
+called "All" (make sure it has the handle "all") that includes all products with price greater than 0.
 
 You can also add a link to the Wish List page on the customers/account template, but it's not required. There's no 
 in-line styling so they should pick up your product and page template styling.
