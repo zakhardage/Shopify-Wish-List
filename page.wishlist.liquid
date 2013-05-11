@@ -1,0 +1,62 @@
+<div class="page">
+<h2>{{ page.title }}</h2>
+{{ page.content }}
+	{% if customer %}
+		<ul>
+			{% for tag in customer.tags %}
+				{% assign the_test = "nutthin" %}
+				{% capture tag_id %}{{ tag }}{% endcapture %}
+				{% assign tag_count = 0 %}
+				{% assign tag_size = tag_id | size %}
+				{% for tag in customer.tags %}
+					{% capture cur_tag %}{{ tag }}{% endcapture %}
+					{% if cur_tag contains tag_id %}
+						{% assign cur_tag_size = cur_tag | size %}
+						{% assign difference = tag_size | minus: cur_tag_size %}
+						{% if difference == 0 %}
+							{% assign the_test = tag_id %}
+						{% else %}
+							{% assign the_test = "nutthin" %}
+						{% endif %}
+					{% endif %}
+				{% endfor %}	
+			
+					{% for collection in collections %}
+						{% if collection.handle == "all" %}
+							{% for product in collection.products %}
+								{% capture product_id %}{{ product.id }}{% endcapture %}
+								{% assign product_id_size = product_id | size %}
+							
+								{% assign difference_one = tag_size | minus: product_id_size %}
+								{% assign difference = difference_one | money_without_currency | times: 100 %}
+								{% capture difference_check %}{{ difference | divided_by: 2 }}{% endcapture %}
+								{% assign check = difference_check | split: '.' %}
+							
+								{% if check[1] contains "5" %}{% assign display = "false" %}{% else %}{% assign display = "true" %}{% endif %}
+							
+								{% if the_test contains product_id and display == "true" %}
+									<li>
+										<a href="{{ product.url }}">{{ product.title }}</a><br />
+										<div style="display:inline-block;">{% form 'customer' %}
+											<input type="hidden" id="contact_email" name="contact[email]" value="{{ customer.email }}"/>
+											<input type="hidden" name="contact[tags]" id="contact_tags" value="x{{ tag_id }}" />
+											<input type='submit' value="remove" />
+										{% endform %}</div>
+										<div style="display:inline-block;">{% for variant in product.variants limit:1 %}
+											<form action="/cart/add" method="post">
+												<input type="hidden" name="id" value="{{ variant.id }}" />
+												<input type="submit" value="add to cart" id="addtocart" />
+											</form>
+										{% endfor %}</div>
+									</li>
+								{% endif %}
+							{% endfor %}
+						{% endif %}
+					{% endfor %}
+			{% endfor %}
+		</ul>
+			<a href="mailto:?subject=My%20{{ shop.name | replace: " ","%20" }}%20Wish%20List&amp;body=I've%20added%20the%20following%20items%20to%20my%20wish%20list%20at%20{{ shop.name | replace: " ","%20" }}{% for tag in customer.tags %}{% assign the_test = "nutthin" %}{% capture tag_id %}{{ tag }}{% endcapture %}{% assign tag_count = 0 %}{% assign tag_size = tag_id | size %}{% for tag in customer.tags %}{% capture cur_tag %}{{ tag }}{% endcapture %}{% if cur_tag contains tag_id %}{% assign cur_tag_size = cur_tag | size %}{% assign difference = tag_size | minus: cur_tag_size %}{% if difference == 0 %}{% assign the_test = tag_id %}{% else %}{% assign the_test = "nutthin" %}{% endif %}{% endif %}{% endfor %}{% for collection in collections %}{% if collection.handle == "all" %}{% for product in collection.products %}{% capture product_id %}{{ product.id }}{% endcapture %}{% assign product_id_size = product_id | size %}{% assign difference_one = tag_size | minus: product_id_size %}{% assign difference = difference_one | money_without_currency | times: 100 %}{% capture difference_check %}{{ difference | divided_by: 2 }}{% endcapture %}{% assign check = difference_check | split: '.' %}{% if check[1] contains "5" %}{% assign display = "false" %}{% else %}{% assign display = "true" %}{% endif %}{% if the_test contains product_id and display == "true" %}%0A%0A{{ product.title | replace: " ","%20" }}%3A%20%20{{ shop.url }}{{ product.url }}{% endif %}{% endfor %}{% endif %}{% endfor %}{% endfor %}">Share my wish list via email</a>
+	{% else %}
+		<p>To create a wish list you must <a href="/account/login">sign in</a> or <a href="/account/register">create an account</a>.</p>
+	{% endif %}
+</div>
