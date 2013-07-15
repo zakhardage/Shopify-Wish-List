@@ -23,34 +23,36 @@
 			
 					{% for collection in collections %}
 						{% if collection.handle == "all" %}
-							{% for product in collection.products %}
-								{% capture product_id %}{{ product.id }}{% endcapture %}
-								{% assign product_id_size = product_id | size %}
-							
-								{% assign difference_one = tag_size | minus: product_id_size %}
-								{% assign difference = difference_one | money_without_currency | times: 100 %}
-								{% capture difference_check %}{{ difference | divided_by: 2 }}{% endcapture %}
-								{% assign check = difference_check | split: '.' %}
-							
-								{% if check[1] contains "5" %}{% assign display = "false" %}{% else %}{% assign display = "true" %}{% endif %}
-							
-								{% if the_test contains product_id and display == "true" %}
-									<li>
-										<a href="{{ product.url }}">{{ product.title }}</a><br />
-										<div style="display:inline-block;">{% form 'customer' %}
-											<input type="hidden" id="contact_email" name="contact[email]" value="{{ customer.email }}"/>
-											<input type="hidden" name="contact[tags]" id="contact_tags" value="x{{ tag_id }}" />
-											<input type='submit' value="remove" />
-										{% endform %}</div>
-										<div style="display:inline-block;">{% for variant in product.variants limit:1 %}
-											<form action="/cart/add" method="post">
-												<input type="hidden" name="id" value="{{ variant.id }}" />
-												<input type="submit" value="add to cart" id="addtocart" />
-											</form>
-										{% endfor %}</div>
-									</li>
-								{% endif %}
-							{% endfor %}
+							{% paginate collection.products by collection.all_products_count %}
+								{% for product in collection.products %}
+									{% capture product_id %}{{ product.id }}{% endcapture %}
+									{% assign product_id_size = product_id | size %}
+								
+									{% assign difference_one = tag_size | minus: product_id_size %}
+									{% assign difference = difference_one | money_without_currency | times: 100 %}
+									{% capture difference_check %}{{ difference | divided_by: 2 }}{% endcapture %}
+									{% assign check = difference_check | split: '.' %}
+								
+									{% if check[1] contains "5" %}{% assign display = "false" %}{% else %}{% assign display = "true" %}{% endif %}
+								
+									{% if the_test contains product_id and display == "true" %}
+										<li>
+											<a href="{{ product.url }}">{{ product.title }}</a><br />
+											<div style="display:inline-block;">{% form 'customer' %}
+												<input type="hidden" id="contact_email" name="contact[email]" value="{{ customer.email }}"/>
+												<input type="hidden" name="contact[tags]" id="contact_tags" value="x{{ tag_id }}" />
+												<input type='submit' value="remove" />
+											{% endform %}</div>
+											<div style="display:inline-block;">{% for variant in product.variants limit:1 %}
+												<form action="/cart/add" method="post">
+													<input type="hidden" name="id" value="{{ variant.id }}" />
+													<input type="submit" value="add to cart" id="addtocart" />
+												</form>
+											{% endfor %}</div>
+										</li>
+									{% endif %}
+								{% endfor %}
+							{% endpaginate %}
 						{% endif %}
 					{% endfor %}
 			{% endfor %}
