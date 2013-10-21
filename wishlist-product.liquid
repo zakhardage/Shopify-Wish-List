@@ -1,35 +1,28 @@
 {% if customer %} 
 	{% assign value = product.id %}
-	{% capture product_id %}{{ product.id }}{% endcapture %}
+	{% capture productID %}{{ product.id }}{% endcapture %}
 	{% for tag in customer.tags %}
-		{% capture tag_id %}{{ tag }}{% endcapture %}
-		{% if tag_id contains product_id %}
-			{% capture value %}x{{ tag_id }}{% endcapture %}
+		{% capture tagID %}{{ tag }}{% endcapture %}
+		{% if tagID contains productID %}
+			{% capture value %}x{{ tagID }}{% endcapture %}
 		{% endif %}
-		{% assign size = value | size %}
-		{% if size == 0 %}{% assign value = product_id %}{% endif %}
+		{% if value.size == 0 %}{% assign value = productID %}{% endif %}
 	{% endfor %}
 
-	{% unless size == 0 %}
-		{% assign product_id_size = product_id | size %}
-		{% assign value_size = value | size %}
-
-		{% assign difference_one = value_size | minus: product_id_size %}
-		{% assign difference = difference_one | money_without_currency | times: 100 %}
-		{% capture difference_check %}{{ difference | divided_by: 2 }}{% endcapture %}
-		{% assign check = difference_check | split: '.' %}
-
-		{% if check[1] contains "5" %}{% assign display = "false" %}{% else %}{% assign display = "true" %}{% endif %}
+	{% unless value.size == 0 %}
+		{% capture check %}{{ value.size | minus:productID.size | money_without_currency | times: 100 | divided_by:2 }}{% endcapture %}
+		{% assign check = check | split:'.' %}
+		{% if check[1] contains "5" %}{% assign display = false %}{% else %}{% assign display = true %}{% endif %}
 	{% endunless %}
 
-	{% if display == "false" %}
-		<p>This product is in your <a href="/pages/wish-list">wish list</a></p>
-	{% else %}
+	{% if display %}
 		{% form 'customer' %}
-			<input type="hidden" id="contact_email" name="contact[email]" value="{{ customer.email }}"/>
-			<input type="hidden" name="contact[tags]" id="contact_tags" value="{{ value }}" />
-			<input type='submit' value="add to wish list" />
+			<input type="hidden" name="contact[email]" value="{{ customer.email }}"/>
+			<input type="hidden" name="contact[tags]" value="{{ value }}" />
+			<button type='submit'>add to wish list</button>
 		{% endform %}
+	{% else %}
+		<p>This product is in your <a href="/pages/wish-list">wish list</a></p>
 	{% endif %}
 {% else %}
 	<p>To add this product to your wish list you must <a href="/account/login">sign in</a> or <a href="/account/register">create an account</a>.</p>
