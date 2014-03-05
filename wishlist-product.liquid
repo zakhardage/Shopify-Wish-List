@@ -10,7 +10,7 @@
 	{% endfor %}
 
 	{% unless value.size == 0 %}
-		{% capture check %}{{ value.size | minus:productID.size | money_without_currency | times: 100 | divided_by:2 }}{% endcapture %}
+		{% capture check %}{{ value.size | minus:productID.size | money_without_currency | times:100 | divided_by:2 }}{% endcapture %}
 		{% assign check = check | split:'.' %}
 		{% if check[1] contains "5" %}{% assign display = false %}{% else %}{% assign display = true %}{% endif %}
 	{% endunless %}
