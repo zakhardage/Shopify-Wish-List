@@ -1,7 +1,7 @@
 {% if customer %}
 	<ul>
 		{% for tag in customer.tags %}
-			{% assign the_test = "nutthin" %}
+			{% assign the_test = 'nutthin' %}
 			{% capture tag_id %}{{ tag }}{% endcapture %}
 			{% assign tag_size = tag_id.size %}
 			{% for tag in customer.tags %}
@@ -11,7 +11,7 @@
 					{% if difference == 0 %}
 						{% assign the_test = tag_id %}
 					{% else %}
-						{% assign the_test = "nutthin" %}
+						{% assign the_test = 'nutthin' %}
 					{% endif %}
 				{% endif %}
 			{% endfor %}	
@@ -20,30 +20,44 @@
 				{% capture product_id %}{{ product.id }}{% endcapture %}
 				{% capture diff %}{{ tag_size | minus:product_id.size | money_without_currency | times:100 | divided_by:2 }}{% endcapture %}
 				{% assign check = diff | split:'.' %}
-				{% if check[1] contains "5" %}{% assign display = false %}{% else %}{% assign display = true %}{% endif %}
+				{% if check[1] contains '5' %}{% assign display = false %}{% else %}{% assign display = true %}{% endif %}
 				{% if display and the_test contains product_id %}
 					<li>
-						<a href="{{ product.url }}">{{ product.title }}</a><br />
-						{% form 'customer' %}
-							<input type="hidden" name="contact[email]" value="{{ customer.email }}"/>
-							<input type="hidden" name="contact[tags]" value="x{{ tag_id }}" />
-							<button type="submit">remove</button>
-						{% endform %}
-						<form action="/cart/add" method="post">
-							<input type="hidden" name="id" value="{{ product.variants.first.id }}" />
-							<button type="submit">add to cart</button>
-						</form>
+						<a href='{{ product.url }}'>{{ product.title }}</a><br />
+						<a href='#remove' onclick="removeTag('x{{ tag_id }}')">remove</a><br />
+						<a href='#add-to-cart' onclick="addToCart('{{ product.variants.first.id }}')">add to cart</a>
 					</li>
 				{% endif %}
 			{% endfor %}
 		{% endfor %}
 	</ul>
 	
-	{% capture subject %}My%20{{ shop.name | replace: " ","%20" }}%20Wish%20List{% endcapture %}
-	{% capture body %}I've%20added%20the%20following%20items%20to%20my%20wish%20list%20at%20{{ shop.name | replace: " ","%20" }}{% endcapture %}
-	{% capture body %}{{ body }} {% for tag in customer.tags %}{% assign the_test = "nutthin" %}{% capture tag_id %}{{ tag }}{% endcapture %}{% assign tag_count = 0 %}{% assign tag_size = tag_id | size %}{% for tag in customer.tags %}{% capture cur_tag %}{{ tag }}{% endcapture %}{% if cur_tag contains tag_id %}{% assign cur_tag_size = cur_tag | size %}{% assign difference = tag_size | minus: cur_tag_size %}{% if difference == 0 %}{% assign the_test = tag_id %}{% else %}{% assign the_test = "nutthin" %}{% endif %}{% endif %}{% endfor %}{% for p in collections.all.products %}{% capture pID %}{{ p.id }}{% endcapture %}{% capture difference %}{{ tag_size | minus:pID.size | money_without_currency | times:100 | divided_by: 2 }}{% endcapture %}{% assign check = difference | split:'.' %}{% if check[1] contains "5" %}{% assign display = false %}{% else %}{% assign display = true %}{% endif %}{% if display and the_test contains pID %}%0A%0A{{ p.title | replace: " ","%20" }}%3A%20%20{{ shop.url }}{{ p.url }}{% endif %}{% endfor %}{% endfor %}{% endcapture %}		
-	<a href="mailto:?subject={{ subject }}&amp;body={{ body }}">Share my wish list via email</a>
+	<form method='post' action='/contact' id='remove' accept-charset='UTF-8'>
+		<input name='form_type' type='hidden' value='customer'/>
+		<input name='utf8' type='hidden' value='✓'> 
+		<input type='hidden' name='contact[email]' value='{{ customer.email }}'/>
+		<input type='hidden' name='contact[tags]' id='remove-value' value='' />
+	</form>
+	<form action='/cart/add' id='add-variant' method='post'>
+		<input type='hidden' name='id' id='product-select' value='' />
+	</form>
+	
+	<script type='text/javascript'>
+		function removeTag(tagID) {
+			document.getElementById('remove-value').value = tagID;
+			document.getElementById('remove').submit();
+		}
+		function addToCart(variantID) {
+			document.getElementById('product-select').value = variantID;
+			document.getElementById('add-variant').submit();
+		}
+	</script>
+	
+	{% capture subject %}My%20{{ shop.name | replace: ' ','%20' }}%20Wish%20List{% endcapture %}
+	{% capture body %}I've%20added%20the%20following%20items%20to%20my%20wish%20list%20at%20{{ shop.name | replace: ' ','%20' }}{% endcapture %}
+	{% capture body %}{{ body }} {% for tag in customer.tags %}{% assign the_test = 'nutthin' %}{% capture tag_id %}{{ tag }}{% endcapture %}{% assign tag_count = 0 %}{% assign tag_size = tag_id | size %}{% for tag in customer.tags %}{% capture cur_tag %}{{ tag }}{% endcapture %}{% if cur_tag contains tag_id %}{% assign cur_tag_size = cur_tag | size %}{% assign difference = tag_size | minus: cur_tag_size %}{% if difference == 0 %}{% assign the_test = tag_id %}{% else %}{% assign the_test = 'nutthin' %}{% endif %}{% endif %}{% endfor %}{% for p in collections.all.products %}{% capture pID %}{{ p.id }}{% endcapture %}{% capture difference %}{{ tag_size | minus:pID.size | money_without_currency | times:100 | divided_by: 2 }}{% endcapture %}{% assign check = difference | split:'.' %}{% if check[1] contains '5' %}{% assign display = false %}{% else %}{% assign display = true %}{% endif %}{% if display and the_test contains pID %}%0A%0A{{ p.title | replace: ' ','%20' }}%3A%20%20{{ shop.url }}{{ p.url }}{% endif %}{% endfor %}{% endfor %}{% endcapture %}		
+	<a href='mailto:?subject={{ subject }}&amp;body={{ body }}'>Share my wish list via email</a>
 {% else %}
-	<p>To create a wish list you must <a href="/account/login">sign in</a> or <a href="/account/register">create an account</a>.</p>
+	<p>To create a wish list you must <a href='/account/login'>sign in</a> or <a href='/account/register'>create an account</a>.</p>
 {% endif %}
 
