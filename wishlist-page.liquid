@@ -16,18 +16,25 @@
 				{% endif %}
 			{% endfor %}	
 		
-			{% for product in collections.all.products %}
-				{% capture product_id %}{{ product.id }}{% endcapture %}
-				{% capture diff %}{{ tag_size | minus:product_id.size | money_without_currency | times:100 | divided_by:2 }}{% endcapture %}
-				{% assign check = diff | split:'.' %}
-				{% if check[1] contains '5' %}{% assign display = false %}{% else %}{% assign display = true %}{% endif %}
-				{% if display and the_test contains product_id %}
-					<li>
-						<a href='{{ product.url }}'>{{ product.title }}</a><br />
-						<a href='#remove' onclick="removeTag('x{{ tag_id }}')">remove</a><br />
-						<a href='#add-to-cart' onclick="addToCart('{{ product.variants.first.id }}')">add to cart</a>
-					</li>
-				{% endif %}
+			{% for collection in collections %}
+				{% paginate collection.products by collection.all_products_count %}
+					{% for product in collection.products %}
+						{% capture product_id %}{{ product.id }}{% endcapture %}
+						{% unless used contains product_id %}
+							{% capture diff %}{{ tag_size | minus:product_id.size | money_without_currency | times:100 | divided_by:2 }}{% endcapture %}
+							{% assign check = diff | split:'.' %}
+							{% if check[1] contains '5' %}{% assign display = false %}{% else %}{% assign display = true %}{% endif %}
+							{% if display and the_test contains product_id %}
+								<li>
+									<a href='{{ product.url }}'>{{ product.title }}</a><br />
+									<a href='#remove' onclick="removeTag('x{{ tag_id }}')">remove</a><br />
+									<a href='#add-to-cart' onclick="addToCart('{{ product.variants.first.id }}')">add to cart</a>
+								</li>
+								{% capture used %}{{ product_id }} {{ used }}{% endcapture %}
+							{% endif %}
+						{% endunless %}
+					{% endfor %}
+				{% endpaginate %}
 			{% endfor %}
 		{% endfor %}
 	</ul>
