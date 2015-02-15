@@ -12,3 +12,5 @@ with an "x" preceding the product id. Re-adding the item to the wish list adds a
 three tags for the one product. If a customer went crazy with the wish list, adding and removing and re-adding 
 products, it could fill up their customer tags quickly. If there's any issue with their account or interference 
 with an app (like a wholesale app), I'd look first to their tags.
+
+For a version that works with variants, check out Jim's version here: https://github.com/jimlakey/Shopify-Wish-List
