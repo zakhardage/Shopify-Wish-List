@@ -39,14 +39,12 @@
 		{% endfor %}
 	</ul>
 	
-	<form method='post' action='/contact' id='remove' accept-charset='UTF-8'>
-		<input name='form_type' type='hidden' value='customer'/>
-		<input name='utf8' type='hidden' value='✓'> 
+	{% form 'customer' replace:'post"','post" id="remove" %}	
 		<input type='hidden' name='contact[email]' value='{{ customer.email }}'/>
 		<input type='hidden' name='contact[tags]' id='remove-value' value='' />
-	</form>
+	{% endform %}
 	<form action='/cart/add' id='add-variant' method='post'>
-		<input type='hidden' name='id' id='product-select' value='' />
+		<input type='hidden' name='id' id='product-select' />
 	</form>
 	
 	<script type='text/javascript'>
