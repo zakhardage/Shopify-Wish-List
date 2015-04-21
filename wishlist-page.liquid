@@ -39,22 +39,23 @@
 		{% endfor %}
 	</ul>
 	
-	{% form 'customer' replace:'post"','post" id="remove" %}	
+	{% form 'customer' %}	
 		<input type='hidden' name='contact[email]' value='{{ customer.email }}'/>
 		<input type='hidden' name='contact[tags]' id='remove-value' value='' />
 	{% endform %}
+	
 	<form action='/cart/add' id='add-variant' method='post'>
-		<input type='hidden' name='id' id='product-select' />
+		<input type='hidden' name='id' id='product-select' value='' />
 	</form>
 	
 	<script type='text/javascript'>
 		function removeTag(tagID) {
-			document.getElementById('remove-value').value = tagID;
-			document.getElementById('remove').submit();
+			$('#remove-value').val(tagID);
+			$('form.contact-form').submit();
 		}
 		function addToCart(variantID) {
-			document.getElementById('product-select').value = variantID;
-			document.getElementById('add-variant').submit();
+			$('product-select').val(variantID);
+			$('form#add-variant').submit();
 		}
 	</script>
 	
