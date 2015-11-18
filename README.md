@@ -3,7 +3,7 @@ Shopify-Wish-List
 
 non-app wish list using customer.tags
 
-To make this wish list work, you'll need to add an include tag for wishlist-product.liquid in your product page -- make sure that it is not within the add-to-cart form. And you'll need to add an include tag for wishlist-page.liquid in a page with the handle wish-list. 
+To make this wish list work, you'll need to add an include tag for wishlist-product.liquid in your product template -- make sure that it is not within the add-to-cart form. And you'll need to add a collection template for collection.wishlist.liquid. 
 
 There's no in-line styling so this should pick up your product and page template styling.
 
