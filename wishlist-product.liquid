@@ -1,25 +1,28 @@
-{% if customer %} 
-	{% capture value %}{{ product.id }}{% endcapture %}
-	{% capture productID %}{{ product.id }}{% endcapture %}
-	{% for tag in customer.tags %}
-		{% capture tagID %}{{ tag }}{% endcapture %}
-		{% if tagID contains productID %}
-			{% assign value = 'x' | append:tag %}
-		{% endif %}
-	{% endfor %}
+{% capture id %}{{ product.id }}{% endcapture %}
+{% for tag in customer.tags %}{% if tag contains id %}{% assign t = tag %}{% endif %}{% endfor %}
+{% assign check = t.size | minus:id.size | modulo:2 %}
+{% unless check == 0 %}{% assign display = true %}{% endunless %}
 
-	{% assign check = value.size | minus:productID.size | modulo:2 %}
-	{% if check == 0 %}{% assign display_button = true %}{% else %}{% assign display_button = false %}{% endif %}
-
-	{% if display_button %}
-		{% form 'customer' %}
-			<input type="hidden" name="contact[email]" value="{{ customer.email }}"/>
-			<input type="hidden" name="contact[tags]" value="{{ value }}" />
-			<button type='submit'>add to wish list</button>
-		{% endform %}
-	{% else %}
-		<p>This product is in your <a href="/pages/wish-list">wish list</a></p>
-	{% endif %}
+{% if display %}
+	<a class="wishlist" href="javascript:void(0)"><i class="fa fa-heart-o"></i> Save to my Wishlist</a>
 {% else %}
-	<p>To add this product to your wish list you must <a href="/account/login">sign in</a> or <a href="/account/register">create an account</a>.</p>
+	<a href="/collections/wish-list"><i class="fa fa-heart-o"></i> Saved to Wishlist</a>
+{% endif %}
+
+<p class="wish-error" style="display:none">To add this product to your favorites you must <a href="/account">sign in</a> or <a href="/account/register">create an account</a>.</p>
+{% form 'customer' %}
+	<input type="hidden" name="contact[email]" value="{{ customer.email }}"/>
+	<input type="hidden" name="contact[tags]" value="{% if t.size > 0 %}x{{ t }}{% else %}{{ product.id }}{% endif %}" />
+{% endform %}
+
+{% if display %}
+	<script>
+		$('.wishlist').click(function() {
+			{% if customer %}
+				$('.contact-form').submit();
+			{% else %}
+				$('.wish-error').show();
+			{% endif %}
+		});
+	</script>
 {% endif %}
