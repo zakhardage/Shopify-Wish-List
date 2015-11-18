@@ -1,0 +1,43 @@
+{% paginate collection.products by collection.all_products_count %}
+	{% if customer %}
+		{% capture tags %}{% for tag in customer.tags %}{{ tag }} {% endfor %}{% endcapture %}
+		{% assign tags = tags | remove:'x' | split:' ' | uniq | join:' ' %}
+		{% for product in collection.products %}
+			{% if tags contains product.id %}
+				{% for tag in customer.tags %}{% if tag contains product.id %}{% assign t = tag %}{% endif %}{% endfor %}
+				{% assign check = t.size | minus:product.id.size | modulo:2 %}
+				{% if check == 0 %}
+					<a href="{{ product.url }}">
+						{{ product.featured_image | product_img_url:'large' | img_tag:product.title }}
+						{{ product.title }}
+						{{ product.price | money }}
+					</a>
+					<span class="add" data="{{ product.variants[0].id }}">add to cart</span>
+					<span class="remove" data="x{{ t }}">or Remove</span>
+				{% endif %}
+			{% endif %}
+		{% endfor %}
+	{% endif %}
+{% endpaginate %}
+
+{% form 'customer' %}	
+	<input type='text' name='contact[email]' value='{{ customer.email }}'/>
+	<input type='text' name='contact[tags]' class='remove-value' value='' />
+{% endform %}
+
+<form action='/cart/add' class='add-variant' method='post'>
+	<input type='text' name='id' class='product-select' value='' />
+</form>
+
+<script>
+	$('.remove').click(function() {
+		var value = $(this).attr('data');
+		$('.remove-value').val(value);
+		$('.contact-form').submit();
+	});
+	$('.add').click(function() {
+		var value = $(this).attr('data');
+		$('.product-select').val(value);
+		$('.add-variant').submit();
+	});
+</script>
