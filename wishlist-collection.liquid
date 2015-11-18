@@ -13,7 +13,7 @@
 						{{ product.price | money }}
 					</a>
 					<span class="add" data="{{ product.variants[0].id }}">add to cart</span>
-					<span class="remove" data="x{{ t }}">or Remove</span>
+					<span class="remove" data="x{{ t }}">or remove</span>
 				{% endif %}
 			{% endif %}
 		{% endfor %}
@@ -21,12 +21,12 @@
 {% endpaginate %}
 
 {% form 'customer' %}	
-	<input type='text' name='contact[email]' value='{{ customer.email }}'/>
-	<input type='text' name='contact[tags]' class='remove-value' value='' />
+	<input type='hidden' name='contact[email]' value='{{ customer.email }}'/>
+	<input type='hidden' name='contact[tags]' class='remove-value' value='' />
 {% endform %}
 
 <form action='/cart/add' class='add-variant' method='post'>
-	<input type='text' name='id' class='product-select' value='' />
+	<input type='hidden' name='id' class='product-select' value='' />
 </form>
 
 <script>
