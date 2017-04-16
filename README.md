@@ -3,6 +3,11 @@ Shopify-Wish-List
 
 non-app wish list using customer.tags
 
+* Shopify updated customer forms: "Customers submitting a contact form or signing up for a mailing list more than once in a 24 hour period need to complete a captcha to verify that they’re human."
+
+* This update breaks the wishlist functionality. You can contact support and request they update your store ("it's actually a tag that has to be added on the back end") to remove the captcha functionality. Of course, this makes your shop vulnerable to spam.
+
+
 To make this wish list work, you'll need to add an include tag for wishlist-product.liquid in your product template -- make sure that it is not within the add-to-cart form. And you'll need to add a collection template for collection.wishlist.liquid.
 
 There's no in-line styling so this should pick up your product and page template styling.
